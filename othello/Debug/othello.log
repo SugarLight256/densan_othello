@@ -1,8 +1,11 @@
-﻿  stdafx.cpp
-  othello.cpp
-m:\電算機\othello\othello\othello.cpp(66): warning C4101: 'nowBlack': ローカル変数は 1 度も使われていません。
-m:\電算機\othello\othello\othello.cpp(66): warning C4101: 'nowWhite': ローカル変数は 1 度も使われていません。
-m:\電算機\othello\othello\othello.cpp(67): warning C4101: 'y': ローカル変数は 1 度も使われていません。
-m:\電算機\othello\othello\othello.cpp(67): warning C4101: 'x': ローカル変数は 1 度も使われていません。
-  LINK : 前回のインクリメンタル リンクで M:\電算機\othello\Debug\othello.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
+﻿  othello.cpp
+m:\電算機\othello\othello\othello.cpp(14): warning C4005: '_DEBUG': マクロが再定義されました。
+  m:\電算機\othello\othello\othello.cpp(14): note: コマンド ラインの引数: '_DEBUG' の前の定義を確認してください
+m:\電算機\othello\othello\othello.cpp(79): warning C4101: 'y': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(107): warning C4101: 'undo': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(106): warning C4101: 'y': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(106): warning C4101: 'x': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(355): warning C4474: 'printf': 書式文字列に渡された引数の数が多すぎます
+  m:\電算機\othello\othello\othello.cpp(355): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+m:\電算機\othello\othello\othello.cpp(502): warning C4715: 'value_CanPlace': 値を返さないコントロール パスがあります。
   othello.vcxproj -> M:\電算機\othello\Debug\othello.exe
