@@ -271,9 +271,9 @@ void printBoard(){
 void cpu(){
 }
 
-int Minimax(){
+/*int Minimax(){
 
-}
+}*/
 
 void InitUndo(Undo* p_undo, int x, int y){
 	p_undo->posx = x;

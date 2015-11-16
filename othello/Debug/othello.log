@@ -1,8 +1,8 @@
-﻿2015/11/11 17:53:20 にビルドを開始しました。
-     1>ノード 2 上のプロジェクト "E:\電算機\othello\othello\othello.vcxproj" (Build ターゲット)。
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.Cpp.Platform.targets(64,5): error MSB8020: The build tools for Visual Studio 2012 (Platform Toolset = 'v110') cannot be found. To build using the v110 build tools, please install Visual Studio 2012 build tools.  Alternatively, you may upgrade to the current Visual Studio tools by selecting the Project menu or right-click the solution, and then selecting "Upgrade Solution...".
-     1>プロジェクト "E:\電算機\othello\othello\othello.vcxproj" (Build ターゲット) のビルドが終了しました -- 失敗。
-
-ビルドに失敗しました。
-
-経過時間 00:00:00.21
+﻿  stdafx.cpp
+  othello.cpp
+m:\電算機\othello\othello\othello.cpp(66): warning C4101: 'nowBlack': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(66): warning C4101: 'nowWhite': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(67): warning C4101: 'y': ローカル変数は 1 度も使われていません。
+m:\電算機\othello\othello\othello.cpp(67): warning C4101: 'x': ローカル変数は 1 度も使われていません。
+  LINK : 前回のインクリメンタル リンクで M:\電算機\othello\Debug\othello.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
+  othello.vcxproj -> M:\電算機\othello\Debug\othello.exe
