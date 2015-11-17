@@ -13,9 +13,10 @@
 
 #define _DEBUG false
 
-#define V_PLACE_HATE 2
-#define V_CAN_HATE 1
-#define V_NUM_HATE 5
+#define V_PLACE_HATE 2*3
+#define V_CAN_HATE 1*2*10
+#define V_NUM_HATE 1
+#define V_KAKUTE_HATE 5*3*11
 
 typedef struct{
 	int x;
@@ -23,11 +24,6 @@ typedef struct{
 	int num;
 	int position[100];
 }Undo;
-
-struct position{
-	int x;
-	int y;
-}; 
 
 void whitePlace(void);
 void blackPlace(void);
@@ -41,24 +37,39 @@ bool printBoard(void);
 void cpu(void);
 int Minmax(bool myTurn, int deep, bool put);
 void RePlace(Undo undo);
-int valuation();
-int value_Place();
-int value_CanPlace();
-int value_Num();
+int valuation(void);
+int value_Place(void);
+int value_CanPlace(void);
+int value_Num(void);
+int value_Kakute(void);
 
-static short _board[10][10] = { 0 };// 0:なし 1:黒 2:白 -1:
+static short _board[10][10] = { 0 };
+
+static short _StoneBoard[10][10] = {
+	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1,  0,  0,  0,  0,  0,  0,  0,  0, -1 },
+	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+};
+
 
 static short pointBoard[10][10]={
-{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-{ 0, 45,-15,  0, -1, -1,  0,-15, 45,  0 },
-{ 0,-15,-30, -5, -5, -5, -5,-30,-15,  0 },
-{ 0,  0, -5,  0, -1, -1,  0, -5,  0,  0 },
-{ 0, -1, -5, -1, -1, -1, -1, -5, -1,  0 },
-{ 0, -1, -5, -1, -1, -1, -1, -5, -1,  0 },
-{ 0,  0, -5,  0, -1, -1,  0, -5,  0,  0 },
-{ 0,-15,-30, -5, -5, -5, -5,-30,-15,  0 },
-{ 0, 45,-15,  0, -1, -1,  0,-15, 45,  0 },
-{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+	{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+	{ 0, 45,-11,  4, -1, -1,  4,-11, 45,  0 },
+	{ 0,-11,-16, -1, -3, -3, -1,-16,-11,  0 },
+	{ 0,  4, -1,  1, -1, -1,  1, -1,  4,  0 },
+	{ 0, -1, -3, -1,  0,  0, -1, -3, -1,  0 },
+	{ 0, -1, -3, -1,  0,  0, -1, -3, -1,  0 },
+	{ 0,  4, -1,  1, -1, -1,  1, -1,  4,  0 },
+	{ 0,-11,-16, -1, -3, -3, -1,-16,-11,  0 },
+	{ 0, 45,-11,  4, -1, -1,  4,-11, 45,  0 },
+	{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
 };
 
 static short place_val;//数が増えるにつれて終盤
@@ -68,7 +79,6 @@ static short phase=0;//数が増えるにつれて終盤
 static bool _Player = false;
 
 static short int phaseDeep=0;
-           
 
 void InitUndo(Undo* undo, int x, int y);
 
@@ -76,10 +86,10 @@ int cpuX,cpuY;
 
 int main(){
 
-	int x, y;
+	int i;
 	resetBoard();
+	printBoard();
 	while (1){//無限ループ
-		if(printBoard())break;//ボード描写
 		if(_Player == PBLACK){       //各プレイヤーごとに石を置く
 			blackPlace();
 		}else if(_Player == PWHITE){
@@ -87,24 +97,23 @@ int main(){
 		}
 
 		place_val++;			//手数カウント
-		if(place_val>=20){
+		if(place_val>=10){
 			phase=1;
 		}
 		if(place_val >= 45){
 			phase=2;
-			phaseDeep=10-SEARCH_DEEP;
+			phaseDeep=8-SEARCH_DEEP;
 		}
-		if(place_val >= 60){    //手数60手で終了
+		if(place_val > 60){    //手数60手で終了
 			break;
 		}
+		if (printBoard())break;//ボード描写
 	}
-	scanf("%d",&x);
+	scanf("%d", &i);
 	return 0;
 }
 
 void whitePlace(){
-	int x, y;
-	Undo undo;
 	/*do{
 		printf("白の番です\n");
 		scanf("%d", &x);
@@ -116,11 +125,12 @@ void whitePlace(){
 			InitUndo(&undo, x, y);
 		}
 	}while(place(&undo) != true || x>8 || y>8 || x<=0 || y<=0);  */
+	printf("CPU 考え中...\n");
 	cpu();
 }
 
 void blackPlace(){
-	int x, y;
+	/*int x, y;
 	Undo undo;
 	do{
 		printf("黒の番です\n");
@@ -128,10 +138,12 @@ void blackPlace(){
 		scanf("%d", &y);
 		if(x>8 || y>8 || x<=0 || y<=0){
 			printf("1~8の数値を入力してください\n");
+			continue;
 		}else{
 			InitUndo(&undo, x, y);
 		}
-	}while(place(&undo) != true || x>8 || y>8 || x<=0 || y<=0);
+	}while(place(&undo) != true || x>8 || y>8 || x<=0 || y<=0);*/
+	cpu();
 }
 
 void turn(int x, int y){
@@ -352,7 +364,7 @@ void cpu(){
 
 	if(y<0 || y>10*10){
 		_Player = !_Player;
-		printf("CPU パス(′・ω・｀)\n",y);
+		printf("CPU パス(′・ω・｀)\n");
 		return;
 	}
 	
@@ -377,7 +389,7 @@ void cpu(){
 }
 
 int Minmax(bool myTurn, int deep, bool put){
-	int value, tmp, bestX, bestY;
+	int value, tmp, bestX=-1, bestY=-1;
 	Undo undo;
 	
 	if(deep <= 0){
@@ -414,7 +426,7 @@ int Minmax(bool myTurn, int deep, bool put){
 			}
 		}
 	}
-	if(deep == SEARCH_DEEP){
+	if(deep == SEARCH_DEEP+phaseDeep){
 		return bestX+bestY*10;
 	}else if(value != -99999 && value != 99999){
 		return value;
@@ -454,24 +466,27 @@ int valuation(){
 	case 0:
 		point += value_Place()*V_PLACE_HATE;
 		point += value_CanPlace()*V_CAN_HATE;
-		point += value_Num()*V_NUM_HATE*-1;
+		point += value_Num()*V_NUM_HATE;
+		point += value_Kakute()*V_KAKUTE_HATE;
 		break;
 	case 1:
 		point += value_Place()*V_PLACE_HATE;
 		point += value_CanPlace()*V_CAN_HATE;
-		point += value_Num()*V_NUM_HATE*-1;
+		point += value_Num()*V_NUM_HATE;
+		point += value_Kakute()*V_KAKUTE_HATE;
 		break;
 	case 2:
 		point += value_Place()*V_PLACE_HATE;
-		point += value_CanPlace()*V_CAN_HATE*2;
-		point += value_Num()*V_NUM_HATE*10;
+		point += value_CanPlace()*V_CAN_HATE;
+		point += value_Num()*V_NUM_HATE;
+		point += value_Kakute()*V_KAKUTE_HATE;
 		break;
 	}
 
 	return point;
 }
 
-int value_Place(){
+int value_Place(){//石の位置をポイント盤から取得して返す
 	int point=0;
 	for(int x=1; x<9; x++){
 		for(int y=1; y<9; y++){
@@ -485,7 +500,7 @@ int value_Place(){
 	return point;
 }
 
-int value_CanPlace(){
+int value_CanPlace(){//いくつ置けるか
 	int point = 0;
 	for(int x=1; x<9; x++){
 		for(int y=1; y<9; y++){
@@ -496,12 +511,15 @@ int value_CanPlace(){
 	}
 	if(_Player == PWHITE){
 		return point;
-	}else if(_Player == PBLACK){
+	}else if(_Player == PBLACK && point == 0){
+		return 9999;
+	}
+	else {
 		return -point;
 	}
 }
 
-int value_Num(){
+int value_Num(){//いくつ裏返せるか
 	int point = 0;
 	for(int x=1; x<9; x++){
 		for(int y=1; y<9; y++){
@@ -509,6 +527,47 @@ int value_Num(){
 				point++;
 			}else if(_board[x][y]==BLACK){
 				point--;
+			}
+		}
+	}
+	return point;
+}
+
+int value_Kakute() {//確定石の数をポイントにして返す
+	int point = 0;
+	int vecX, vecY, moveX, moveY, tmp;
+	int vecList[4] = { 1,0,-1,0 };
+	for (int x = 1; x <= 8; x += 7) {
+		for (int y = 1; y <= 8; y += 7) {
+			if (_board[x][y] == WHITE || _board[x][y] == BLACK) {
+				tmp = _board[x][y];
+				for (int i = 0; i < 4; i++) {//vecX -> 1,0,-1,-2で-2を無視
+					vecX = vecList[i];
+					if (vecX == 0) {
+						vecY = vecList[i - 1];
+					}
+					else {
+						vecY = 0;
+					}
+					moveX = 0;
+					moveY = 0;
+					do{
+						if (_board[x][y] == BLACK) {
+							point--;
+						}
+						else {
+							point++;
+						}
+						moveX += vecX;
+						moveY += vecY;
+					} while (_board[x + moveX][y + moveY] == tmp);
+					if (_board[x][y] == BLACK) {
+						point++;
+					}
+					else {
+						point--;
+					}
+				}
 			}
 		}
 	}
